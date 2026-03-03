@@ -1,6 +1,12 @@
+<div align=center>
+
+<img width="550px" height="550px" alt="image" src="https://github.com/user-attachments/assets/e65118b9-cef7-4062-bed7-0abe7eef812a" />
+
 # devbox
 
 CLI para executar o Claude Code dentro de um container Docker isolado.
+
+</div>
 
 https://github.com/user-attachments/assets/68875a8c-aa6a-42db-9768-d11742a5a7b9
 
