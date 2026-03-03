@@ -2,6 +2,8 @@
 
 CLI para executar o Claude Code dentro de um container Docker isolado.
 
+https://github.com/user-attachments/assets/68875a8c-aa6a-42db-9768-d11742a5a7b9
+
 ## Pré-requisitos
 
 - [Docker](https://docs.docker.com/get-docker/)
