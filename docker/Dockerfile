@@ -9,9 +9,12 @@ RUN npm install -g @anthropic-ai/claude-code
 
 RUN pip3 install dotbins --break-system-packages
 
-WORKDIR /workspace
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+RUN usermod -l claude -md /home/claude ubuntu && groupmod -n claude ubuntu
+USER claude
+WORKDIR /workspace
 
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["claude", "--dangerously-skip-permissions"]

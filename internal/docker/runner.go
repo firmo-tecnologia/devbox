@@ -8,6 +8,8 @@ import (
 	"github.com/firmotecnologia/devbox/internal/config"
 )
 
+const containerHome = "/home/claude"
+
 func Run(cfg *config.Config) error {
 	if err := cfg.EnsureDirs(); err != nil {
 		return err
@@ -37,13 +39,14 @@ func runContainer(cfg *config.Config) error {
 		"run", "--rm", "-it",
 		"--workdir", "/workspace",
 		"-v", cfg.WorkspaceDir + ":/workspace",
-		"-v", cfg.ClaudeDir + ":/root/.claude",
+		"-v", cfg.ClaudeDir + ":" + containerHome + "/.claude",
+		"-v", cfg.ClaudeJSON + ":" + containerHome + "/.claude.json",
 	}
 
 	if cfg.HasDotbinsConf() {
 		args = append(args,
-			"-v", cfg.DotbinsConf+":/root/.config/dotbins/config.yaml:ro",
-			"-v", cfg.DotbinsCache+":/root/.dotbins",
+			"-v", cfg.DotbinsConf+":"+containerHome+"/.config/dotbins/config.yaml:ro",
+			"-v", cfg.DotbinsCache+":"+containerHome+"/.dotbins",
 		)
 	}
 

@@ -11,6 +11,7 @@ type Config struct {
 	NoPull       bool
 	WorkspaceDir string
 	ClaudeDir    string
+	ClaudeJSON   string
 	DotbinsConf  string
 	DotbinsCache string
 }
@@ -30,6 +31,7 @@ func New(image string, noPull bool, workspaceDir string, dotbinsConf string) (*C
 		NoPull:       noPull,
 		WorkspaceDir: workspaceDir,
 		ClaudeDir:    filepath.Join(home, ".claude"),
+		ClaudeJSON:   filepath.Join(home, ".claude.json"),
 		DotbinsConf:  dotbinsConf,
 		DotbinsCache: filepath.Join(home, ".devbox", "dotbins"),
 	}, nil
@@ -42,7 +44,21 @@ func (c *Config) EnsureDirs() error {
 			return fmt.Errorf("creating directory %s: %w", dir, err)
 		}
 	}
+	if err := ensureFile(c.ClaudeJSON); err != nil {
+		return fmt.Errorf("creating %s: %w", c.ClaudeJSON, err)
+	}
 	return nil
+}
+
+func ensureFile(path string) error {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL, 0644)
+	if os.IsExist(err) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	return f.Close()
 }
 
 func (c *Config) HasDotbinsConf() bool {

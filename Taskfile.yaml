@@ -1,9 +1,13 @@
 version: "3"
 
 tasks:
+  default:
+    desc: List all tasks
+    cmd: task --list-all
+
   build:
     cmds:
-      - go build -o bin/devbox .
+      - go build -o bin/devbox . && sudo mv bin/devbox /usr/bin/
 
   docker-build:
     cmds:
