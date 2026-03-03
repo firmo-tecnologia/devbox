@@ -1,6 +1,6 @@
 <div align=center>
 
-<img width="550px" height="550px" alt="image" src="https://github.com/user-attachments/assets/e65118b9-cef7-4062-bed7-0abe7eef812a" />
+<img width="225px" height="225px" alt="image" src="https://github.com/user-attachments/assets/e65118b9-cef7-4062-bed7-0abe7eef812a" />
 
 # devbox
 
