@@ -15,6 +15,7 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		image, _ := cmd.Flags().GetString("image")
 		noPull, _ := cmd.Flags().GetBool("no-pull")
+		shell, _ := cmd.Flags().GetBool("shell")
 		dotbinsConf, _ := cmd.Flags().GetString("dotbins-config")
 
 		workspaceDir, err := os.Getwd()
@@ -22,7 +23,7 @@ var rootCmd = &cobra.Command{
 			return fmt.Errorf("getting working directory: %w", err)
 		}
 
-		cfg, err := config.New(image, noPull, workspaceDir, dotbinsConf)
+		cfg, err := config.New(image, noPull, shell, workspaceDir, dotbinsConf)
 		if err != nil {
 			return err
 		}
@@ -34,7 +35,8 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.Flags().StringP("image", "i", "firmotecnologia/devbox:latest", "Docker image to use")
 	rootCmd.Flags().Bool("no-pull", false, "Skip docker pull before running")
-	rootCmd.Flags().StringP("dotbins-config", "d", "", "Path to dotbins config.yaml (default: ~/.config/dotbins/config.yaml)")
+	rootCmd.Flags().Bool("shell", false, "Start a bash shell instead of Claude Code")
+	rootCmd.Flags().StringP("dotbins-config", "d", "", "Path to dotbins dotbins.yaml (default: ~/.dotbins/dotbins.yaml)")
 }
 
 func Execute() {

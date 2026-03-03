@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Image        string
 	NoPull       bool
+	Shell        bool
 	WorkspaceDir string
 	ClaudeDir    string
 	ClaudeJSON   string
@@ -16,19 +17,20 @@ type Config struct {
 	DotbinsCache string
 }
 
-func New(image string, noPull bool, workspaceDir string, dotbinsConf string) (*Config, error) {
+func New(image string, noPull bool, shell bool, workspaceDir string, dotbinsConf string) (*Config, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, fmt.Errorf("getting home directory: %w", err)
 	}
 
 	if dotbinsConf == "" {
-		dotbinsConf = filepath.Join(home, ".config", "dotbins", "config.yaml")
+		dotbinsConf = filepath.Join(home, ".dotbins", "dotbins.yaml")
 	}
 
 	return &Config{
 		Image:        image,
 		NoPull:       noPull,
+		Shell:        shell,
 		WorkspaceDir: workspaceDir,
 		ClaudeDir:    filepath.Join(home, ".claude"),
 		ClaudeJSON:   filepath.Join(home, ".claude.json"),

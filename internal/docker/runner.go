@@ -45,12 +45,16 @@ func runContainer(cfg *config.Config) error {
 
 	if cfg.HasDotbinsConf() {
 		args = append(args,
-			"-v", cfg.DotbinsConf+":"+containerHome+"/.config/dotbins/config.yaml:ro",
+			"-v", cfg.DotbinsConf+":"+containerHome+"/.config/dotbins/dotbins.yaml:ro",
 			"-v", cfg.DotbinsCache+":"+containerHome+"/.dotbins",
 		)
 	}
 
 	args = append(args, cfg.Image)
+
+	if cfg.Shell {
+		args = append(args, "/bin/bash")
+	}
 
 	cmd := exec.Command("docker", args...)
 	cmd.Stdin = os.Stdin

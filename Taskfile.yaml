@@ -9,14 +9,17 @@ tasks:
     cmds:
       - go build -o bin/devbox . && sudo mv bin/devbox /usr/bin/
 
-  docker-build:
+  docker:build:
     cmds:
       - docker build -t firmotecnologia/devbox:latest ./docker
 
-  docker-push:
+  docker:push:
+    deps:
+      - docker:build
     cmds:
       - docker push firmotecnologia/devbox:latest
 
-  install:
-    cmds:
-      - go install .
+  dev:
+    deps:
+      - docker:push
+      - build
