@@ -50,6 +50,10 @@ func runContainer(cfg *config.Config) error {
 		)
 	}
 
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		args = append(args, "-e", "GITHUB_TOKEN="+token)
+	}
+
 	args = append(args, cfg.Image)
 
 	if cfg.Shell {

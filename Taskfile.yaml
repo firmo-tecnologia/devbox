@@ -20,6 +20,6 @@ tasks:
       - docker push firmotecnologia/devbox:latest
 
   dev:
-    deps:
-      - docker:push
-      - build
+    cmds:
+      - task: docker:push
+      - task: build
