@@ -1,0 +1,18 @@
+version: "3"
+
+tasks:
+  build:
+    cmds:
+      - go build -o bin/devbox .
+
+  docker-build:
+    cmds:
+      - docker build -t firmotecnologia/devbox:latest ./docker
+
+  docker-push:
+    cmds:
+      - docker push firmotecnologia/devbox:latest
+
+  install:
+    cmds:
+      - go install .

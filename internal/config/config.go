@@ -1,0 +1,51 @@
+package config
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+type Config struct {
+	Image        string
+	NoPull       bool
+	WorkspaceDir string
+	ClaudeDir    string
+	DotbinsConf  string
+	DotbinsCache string
+}
+
+func New(image string, noPull bool, workspaceDir string, dotbinsConf string) (*Config, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, fmt.Errorf("getting home directory: %w", err)
+	}
+
+	if dotbinsConf == "" {
+		dotbinsConf = filepath.Join(home, ".config", "dotbins", "config.yaml")
+	}
+
+	return &Config{
+		Image:        image,
+		NoPull:       noPull,
+		WorkspaceDir: workspaceDir,
+		ClaudeDir:    filepath.Join(home, ".claude"),
+		DotbinsConf:  dotbinsConf,
+		DotbinsCache: filepath.Join(home, ".devbox", "dotbins"),
+	}, nil
+}
+
+func (c *Config) EnsureDirs() error {
+	dirs := []string{c.ClaudeDir, c.DotbinsCache}
+	for _, dir := range dirs {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return fmt.Errorf("creating directory %s: %w", dir, err)
+		}
+	}
+	return nil
+}
+
+func (c *Config) HasDotbinsConf() bool {
+	_, err := os.Stat(c.DotbinsConf)
+	return err == nil
+}
