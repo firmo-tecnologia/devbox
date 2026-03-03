@@ -10,14 +10,28 @@ tasks:
       - go build -o bin/devbox . && sudo mv bin/devbox /usr/bin/
 
   docker:build:
+    vars:
+      GIT_TAG:
+        sh: git tag --points-at HEAD | head -1 | sed 's/^v//'
     cmds:
       - docker build -t firmotecnologia/devbox:latest ./docker
+      - |
+        if [ -n "{{.GIT_TAG}}" ]; then
+          docker tag firmotecnologia/devbox:latest firmotecnologia/devbox:{{.GIT_TAG}}
+        fi
 
   docker:push:
     deps:
       - docker:build
+    vars:
+      GIT_TAG:
+        sh: git tag --points-at HEAD | head -1 | sed 's/^v//'
     cmds:
       - docker push firmotecnologia/devbox:latest
+      - |
+        if [ -n "{{.GIT_TAG}}" ]; then
+          docker push firmotecnologia/devbox:{{.GIT_TAG}}
+        fi
 
   dev:
     cmds:
