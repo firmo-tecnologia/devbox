@@ -8,11 +8,14 @@ CLI para executar o Claude Code dentro de um container Docker isolado.
 
 ## Instalação
 
-```bash
-task build
-```
+Baixe o binário para sua plataforma na [página de releases](https://github.com/firmotecnologia/devbox/releases) e mova para um diretório no seu `PATH`:
 
-Isso compila o binário Go e move para `/usr/bin/devbox`.
+```bash
+# Exemplo para Linux amd64
+curl -L https://github.com/firmotecnologia/devbox/releases/latest/download/devbox-linux-amd64 -o devbox
+chmod +x devbox
+sudo mv devbox /usr/local/bin/
+```
 
 ## Uso
 
@@ -49,24 +52,27 @@ O `devbox` monta o diretório atual como `/workspace` dentro do container, prese
 - Diretório atual → `/workspace`
 - `~/.claude` → `/home/claude/.claude`
 - `~/.claude.json` → `/home/claude/.claude.json`
-- Cache do dotbins → `/home/claude/.devbox/dotbins` (se configurado)
+- Cache do dotbins → `~/.devbox/dotbins` (se configurado)
 
 A variável de ambiente `GITHUB_TOKEN` é automaticamente repassada do host para o container, quando disponível.
 
-## Imagem Docker
+## Dotbins
 
-Para construir e publicar a imagem:
+O devbox usa o [dotbins](https://github.com/nikitabobko/dotbins) para disponibilizar ferramentas adicionais dentro do container (ex: `gh`, `jq`, `fzf`), sem precisar instalá-las na imagem base.
 
-```bash
-# Apenas build
-task docker:build
+Se o arquivo `~/.dotbins/dotbins.yaml` existir no host (ou o caminho definido por `--dotbins-config`), ele é montado no container junto com o cache de binários em `~/.devbox/dotbins/`. Na primeira execução o dotbins baixa os binários; nas seguintes o cache é reaproveitado.
 
-# Build + push
-task docker:push
+Exemplo de configuração (`~/.dotbins/dotbins.yaml`):
 
-# Fluxo completo de desenvolvimento (push da imagem + build do binário)
-task dev
+```yaml
+tools:
+  - repo: cli/cli
+    binary: gh
+  - repo: jqlang/jq
+    binary: jq
 ```
+
+Sem esse arquivo o container sobe normalmente, sem ferramentas extras.
 
 ## Licença
 
