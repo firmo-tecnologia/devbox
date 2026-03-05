@@ -11,13 +11,14 @@ type Config struct {
 	NoPull       bool
 	Shell        bool
 	WorkspaceDir string
+	GitRoot      string
 	ClaudeDir    string
 	ClaudeJSON   string
 	DotbinsConf  string
 	DotbinsCache string
 }
 
-func New(image string, noPull bool, shell bool, workspaceDir string, dotbinsConf string) (*Config, error) {
+func New(image string, noPull bool, shell bool, workspaceDir string, gitRoot string, dotbinsConf string) (*Config, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, fmt.Errorf("getting home directory: %w", err)
@@ -32,6 +33,7 @@ func New(image string, noPull bool, shell bool, workspaceDir string, dotbinsConf
 		NoPull:       noPull,
 		Shell:        shell,
 		WorkspaceDir: workspaceDir,
+		GitRoot:      gitRoot,
 		ClaudeDir:    filepath.Join(home, ".claude"),
 		ClaudeJSON:   filepath.Join(home, ".claude.json"),
 		DotbinsConf:  dotbinsConf,

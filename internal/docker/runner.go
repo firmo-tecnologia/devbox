@@ -38,10 +38,17 @@ func runContainer(cfg *config.Config) error {
 	args := []string{
 		"run", "--rm", "-it",
 		"--workdir", "/workspace",
-		"-v", cfg.WorkspaceDir + ":/workspace",
-		"-v", cfg.ClaudeDir + ":" + containerHome + "/.claude",
-		"-v", cfg.ClaudeJSON + ":" + containerHome + "/.claude.json",
 	}
+
+	if cfg.GitRoot != "" {
+		args = append(args, "-v", cfg.GitRoot+":"+cfg.GitRoot)
+	}
+
+	args = append(args,
+		"-v", cfg.WorkspaceDir+":/workspace",
+		"-v", cfg.ClaudeDir+":"+containerHome+"/.claude",
+		"-v", cfg.ClaudeJSON+":"+containerHome+"/.claude.json",
+	)
 
 	if cfg.HasDotbinsConf() {
 		args = append(args,
