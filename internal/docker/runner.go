@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/firmotecnologia/devbox/internal/config"
 )
@@ -34,6 +35,40 @@ func pullImage(image string) error {
 	return nil
 }
 
+// prepareXauth creates a temporary Xauthority file with wildcard family entries,
+// allowing the container (with a different hostname) to authenticate with the X server.
+func prepareXauth(display string) string {
+	const tmpFile = "/tmp/.devbox.xauth"
+
+	nlist, err := exec.Command("xauth", "nlist", display).Output()
+	if err != nil || len(strings.TrimSpace(string(nlist))) == 0 {
+		if xa := os.Getenv("XAUTHORITY"); xa != "" {
+			return xa
+		}
+		return os.Getenv("HOME") + "/.Xauthority"
+	}
+
+	lines := strings.Split(string(nlist), "\n")
+	var wildcard strings.Builder
+	for _, line := range lines {
+		if len(line) >= 4 {
+			wildcard.WriteString("ffff" + line[4:] + "\n")
+		}
+	}
+
+	os.Remove(tmpFile)
+	merge := exec.Command("xauth", "-f", tmpFile, "nmerge", "-")
+	merge.Stdin = strings.NewReader(wildcard.String())
+	if err := merge.Run(); err != nil {
+		if xa := os.Getenv("XAUTHORITY"); xa != "" {
+			return xa
+		}
+		return os.Getenv("HOME") + "/.Xauthority"
+	}
+
+	return tmpFile
+}
+
 func runContainer(cfg *config.Config) error {
 	args := []string{
 		"run", "--rm", "-it",
@@ -54,6 +89,22 @@ func runContainer(cfg *config.Config) error {
 		args = append(args,
 			"-v", cfg.DotbinsConf+":"+containerHome+"/.config/dotbins/dotbins.yaml:ro",
 			"-v", cfg.DotbinsCache+":"+containerHome+"/.dotbins",
+		)
+	}
+
+	if display := os.Getenv("DISPLAY"); display != "" {
+		xauthFile := prepareXauth(display)
+		args = append(args,
+			"-v", "/tmp/.X11-unix:/tmp/.X11-unix",
+			"-v", xauthFile+":"+containerHome+"/.Xauthority:ro",
+			"-e", "DISPLAY="+display,
+			"-e", "XAUTHORITY="+containerHome+"/.Xauthority",
+		)
+	} else if waylandDisplay := os.Getenv("WAYLAND_DISPLAY"); waylandDisplay != "" {
+		xdgRuntime := os.Getenv("XDG_RUNTIME_DIR")
+		args = append(args,
+			"-v", xdgRuntime+"/"+waylandDisplay+":/tmp/"+waylandDisplay,
+			"-e", "WAYLAND_DISPLAY=/tmp/"+waylandDisplay,
 		)
 	}
 
